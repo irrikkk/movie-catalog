@@ -11,15 +11,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		461709EB2EA0BCD200CCE26E /* MovieCatalog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = MovieCatalog.app; path = "/Users/irinanovikova/Mobile-MovieCatalog/MovieCatalog/build/Debug-iphoneos/MovieCatalog.app"; sourceTree = "<absolute>"; };
 		46170A092EA0CBE600CCE26E /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		46170A1B2EA0E3BF00CCE26E /* MovieCatalog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieCatalog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		468E1ACA2E980702002550CD /* Exceptions for "MovieCatalog" folder in "MovieCatalog" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Application/Info.plist,
+				Info.plist,
 			);
 			target = 468E1AB72E980701002550CD /* MovieCatalog */;
 		};
@@ -52,6 +52,7 @@
 			children = (
 				468E1ABA2E980701002550CD /* MovieCatalog */,
 				46170A092EA0CBE600CCE26E /* .gitignore */,
+				46170A1B2EA0E3BF00CCE26E /* MovieCatalog.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -77,7 +78,7 @@
 			packageProductDependencies = (
 			);
 			productName = MovieCatalog;
-			productReference = 461709EB2EA0BCD200CCE26E /* MovieCatalog.app */;
+			productReference = 46170A1B2EA0E3BF00CCE26E /* MovieCatalog.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

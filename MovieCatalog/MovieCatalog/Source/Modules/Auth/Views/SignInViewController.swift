@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class SignInViewController: UIViewController {
     
     // MARK: UI Elements
     let imageViewLogo = UIImageView(image: UIImage(named: "logoApp"))

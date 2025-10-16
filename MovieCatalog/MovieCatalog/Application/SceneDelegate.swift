@@ -24,11 +24,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow (windowScene: windowScene)
         
         // 3. создаём основной контроллер и интегрирруем в него NavigationController
-        let viewController = ViewController()
-        let navigationController = UINavigationController(rootViewController: viewController)
+        let tabBarController = MainTabBarViewController()
+//        let navigationController = UINavigationController(rootViewController: viewController)
         
         // 4. определяем navigationController как rootViewController
-        window.rootViewController = navigationController
+        window.rootViewController = tabBarController
         
         // 5. настройка window
         self.window = window
