@@ -6,15 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		46170A0A2EA0CBF100CCE26E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 46170A092EA0CBE600CCE26E /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		468E1AB82E980701002550CD /* MovieCatalog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieCatalog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		461709EB2EA0BCD200CCE26E /* MovieCatalog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = MovieCatalog.app; path = "/Users/irinanovikova/Mobile-MovieCatalog/MovieCatalog/build/Debug-iphoneos/MovieCatalog.app"; sourceTree = "<absolute>"; };
+		46170A092EA0CBE600CCE26E /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		468E1ACA2E980702002550CD /* Exceptions for "MovieCatalog" folder in "MovieCatalog" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Application/Info.plist,
 			);
 			target = 468E1AB72E980701002550CD /* MovieCatalog */;
 		};
@@ -46,16 +51,8 @@
 			isa = PBXGroup;
 			children = (
 				468E1ABA2E980701002550CD /* MovieCatalog */,
-				468E1AB92E980701002550CD /* Products */,
+				46170A092EA0CBE600CCE26E /* .gitignore */,
 			);
-			sourceTree = "<group>";
-		};
-		468E1AB92E980701002550CD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				468E1AB82E980701002550CD /* MovieCatalog.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -80,7 +77,7 @@
 			packageProductDependencies = (
 			);
 			productName = MovieCatalog;
-			productReference = 468E1AB82E980701002550CD /* MovieCatalog.app */;
+			productReference = 461709EB2EA0BCD200CCE26E /* MovieCatalog.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -108,7 +105,7 @@
 			mainGroup = 468E1AAF2E980701002550CD;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 468E1AB92E980701002550CD /* Products */;
+			productRefGroup = 468E1AAF2E980701002550CD;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -122,6 +119,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46170A0A2EA0CBF100CCE26E /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,7 +148,6 @@
 				INFOPLIST_FILE = MovieCatalog/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -178,7 +175,6 @@
 				INFOPLIST_FILE = MovieCatalog/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
