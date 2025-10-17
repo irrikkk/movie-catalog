@@ -6,6 +6,7 @@
 	<array>
 		<string>IBMPlexSans-Medium.ttf</string>
 		<string>IBMPlexSans-Regular.ttf</string>
+		<string>IBMPlexSans-Bold.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

@@ -17,22 +17,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
-        // 1. захват сцены
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        // 2. создание UIWindow c использованием конструктора, который принимает сцену
         let window = UIWindow (windowScene: windowScene)
         
-        // 3. создаём основной контроллер и интегрирруем в него NavigationController
-        let tabBarController = MainTabBarViewController()
-//        let navigationController = UINavigationController(rootViewController: viewController)
+        let isSignedIn = UserDefaults.standard.bool(forKey: "isUserSignedIn")
+        let rootViewController: UIViewController
         
-        // 4. определяем navigationController как rootViewController
-        window.rootViewController = tabBarController
-        
-        // 5. настройка window
+        if isSignedIn {
+            rootViewController = MainTabBarViewController()
+        } else {
+            let signInViewController = SignInViewController()
+            
+            signInViewController.onLoginSuccess = { [weak self] in
+                self?.switchToMainScreen()
+            }
+            rootViewController = signInViewController
+        }
+        window.rootViewController = rootViewController
         self.window = window
         window.makeKeyAndVisible()
+    }
+    
+    func switchToMainScreen() {
+        let tabBarController = MainTabBarViewController()
+        window?.rootViewController = tabBarController
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

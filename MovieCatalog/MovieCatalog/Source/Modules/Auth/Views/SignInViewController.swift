@@ -8,26 +8,27 @@
 import UIKit
 
 class SignInViewController: UIViewController {
+    var onLoginSuccess: (() -> Void)?
     
-    // MARK: UI Elements
+    // MARK: - UI Elements
     let imageViewLogo = UIImageView(image: UIImage(named: "logoApp"))
     let textFieldViewLogin = UITextField()
     let textFieldViewPassword = UITextField()
-    let buttonViewSignIn = UIButton(type: .system)
-    let buttonViewRegistration = UIButton(type: .system)
+    let buttonSignIn = UIButton(type: .system)
+    let buttonRegistration = UIButton(type: .system)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .black
         
-        // MARK: logo
+        // MARK: - logo
         imageViewLogo.contentMode = .scaleAspectFit
         imageViewLogo.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageViewLogo)
-    
         
-        // MARK: Input1
+        
+        // MARK: - Input1
         textFieldViewLogin.textColor = UIColor(named: "AccentColor")
         textFieldViewLogin.borderStyle = .none
         textFieldViewLogin.layer.borderWidth = 1
@@ -36,21 +37,21 @@ class SignInViewController: UIViewController {
         textFieldViewLogin.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
         
         let paragraphStyleLogin = NSMutableParagraphStyle()
-            paragraphStyleLogin.firstLineHeadIndent = 16
+        paragraphStyleLogin.firstLineHeadIndent = 16
         
         textFieldViewLogin.attributedPlaceholder = NSAttributedString(string: "Логин",
-        attributes: [
-            .foregroundColor: UIColor(named: "GrayFadedMyColor")!,
-            .paragraphStyle: paragraphStyleLogin,
-            .font: UIFont(name: "IBMPlexSans-Regular", size: 14)!
-        ])
-       
+                                                                      attributes: [
+                                                                        .foregroundColor: UIColor(named: "GrayFadedMyColor")!,
+                                                                        .paragraphStyle: paragraphStyleLogin,
+                                                                        .font: UIFont(name: "IBMPlexSans-Regular", size: 14)!
+                                                                      ])
+        
         textFieldViewLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(textFieldViewLogin)
-
         
         
-        // MARK: Input2
+        
+        // MARK: - Input2
         textFieldViewPassword.textColor = UIColor(named: "AccentColor")
         textFieldViewPassword.borderStyle = .none
         textFieldViewPassword.layer.borderWidth = 1
@@ -59,7 +60,7 @@ class SignInViewController: UIViewController {
         textFieldViewPassword.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
         
         let paragraphStyleRegistration = NSMutableParagraphStyle()
-            paragraphStyleRegistration.firstLineHeadIndent = 16
+        paragraphStyleRegistration.firstLineHeadIndent = 16
         
         textFieldViewPassword.attributedPlaceholder = NSAttributedString(string: "Пароль",
         attributes: [
@@ -70,38 +71,52 @@ class SignInViewController: UIViewController {
         
         textFieldViewPassword.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(textFieldViewPassword)
-
         
         
-        // MARK: Button1
-        buttonViewSignIn.setTitle("Войти", for: .normal)
-        buttonViewSignIn.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
-        buttonViewSignIn.backgroundColor = UIColor(named: "BlackMyColor")
-        buttonViewSignIn.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
-        buttonViewSignIn.layer.borderWidth = 1
-        buttonViewSignIn.layer.cornerRadius = 4
-        buttonViewSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
-        buttonViewSignIn.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(buttonViewSignIn)
         
-     
+        // MARK: - Button1
+        buttonSignIn.setTitle("Войти", for: .normal)
+        buttonSignIn.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
+        buttonSignIn.backgroundColor = UIColor(named: "BlackMyColor")
+        buttonSignIn.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
+        buttonSignIn.layer.borderWidth = 1
+        buttonSignIn.layer.cornerRadius = 4
+        buttonSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        buttonSignIn.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(buttonSignIn)
         
-        // MARK: Button2
-        buttonViewRegistration.setTitle("Регистрация", for: .normal)
-        buttonViewRegistration.backgroundColor = UIColor(named: "BlackMyColor")
-        buttonViewRegistration.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
-        buttonViewRegistration.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
+        buttonSignIn.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
         
-        buttonViewRegistration.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(buttonViewRegistration)
+        
+        // MARK: - Button2
+        buttonRegistration.setTitle("Регистрация", for: .normal)
+        buttonRegistration.backgroundColor = UIColor(named: "BlackMyColor")
+        buttonRegistration.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
+        buttonRegistration.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
+        
+        buttonRegistration.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(buttonRegistration)
+        
+        buttonRegistration.addTarget(self, action: #selector(registrationButtonTapped), for: .touchUpInside)
+        
         
         setupConstraints()
+        setupDelegates()
+        updateLoginButtonState()
+    }
+    
+    private func setupDelegates() {
+        textFieldViewLogin.delegate = self
+        textFieldViewPassword.delegate = self
         
-       
+        // отслежка изменений текста
+        textFieldViewLogin.addTarget(self, action: #selector(textFieldDidChange ), for: .editingChanged)
+        textFieldViewPassword.addTarget(self, action: #selector(textFieldDidChange ), for: .editingChanged)
+        
         
     }
     
-    // MARK: Layout Constraints
+    // MARK: - Layout Constraints
     private func setupConstraints() {
        
         imageViewLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -128,21 +143,82 @@ class SignInViewController: UIViewController {
       
         
         
-        buttonViewSignIn.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16).isActive = true
-        buttonViewSignIn.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16).isActive = true
-        buttonViewSignIn.bottomAnchor.constraint(equalTo: buttonViewRegistration.topAnchor, constant: -8).isActive = true
+        buttonSignIn.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16).isActive = true
+        buttonSignIn.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16).isActive = true
+        buttonSignIn.bottomAnchor.constraint(equalTo: buttonRegistration.topAnchor, constant: -8).isActive = true
         
             
-        buttonViewSignIn.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        buttonSignIn.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
         
       
-        buttonViewRegistration.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16).isActive = true
-        buttonViewRegistration.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16).isActive = true
-        buttonViewRegistration.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6).isActive = true
+        buttonRegistration.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16).isActive = true
+        buttonRegistration.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16).isActive = true
+        buttonRegistration.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6).isActive = true
             
-        buttonViewRegistration.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        buttonRegistration.heightAnchor.constraint(equalToConstant: 32).isActive = true
        
     }
+    
+    // MARK: - Action Methods
+    @objc func  textFieldDidChange() {
+        updateLoginButtonState()
+    }
+    
+    @objc func signInButtonTapped() {
+        view.endEditing(true)
+        
+        UserDefaults.standard.set(true, forKey: "isUserSignedIn")
+        navigateToMainScreen()
+        
+    }
+    
+    @objc func registrationButtonTapped() {
+        UserDefaults.standard.set(false, forKey: "isUserSignedIn")
+        navigateToMainScreen()
+    }
+    
+    func navigateToMainScreen() {
+        onLoginSuccess?()
+    }
+    
+    func updateLoginButtonState() {
+        let login = textFieldViewLogin.text ?? ""
+        let password = textFieldViewPassword.text ?? ""
+        
+        let isEnabled = !login.isEmpty && !password.isEmpty
+        
+        buttonSignIn.isEnabled = isEnabled
+        
+        if isEnabled {
+            buttonSignIn.backgroundColor = UIColor(named: "AccentColor")
+            buttonSignIn.setTitleColor(.white, for: .normal)
+            
+        } else {
+            buttonSignIn.backgroundColor = .blackMy
+            buttonSignIn.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
+            buttonSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        }
+    }
+}
 
+// MARK: - UITextFieldDelegate
+extension SignInViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case textFieldViewLogin:
+            textFieldViewPassword.becomeFirstResponder()
+        case textFieldViewPassword:
+            textFieldViewPassword.resignFirstResponder()
+            
+            if buttonSignIn.isEnabled {
+                signInButtonTapped()
+            }
+        default :
+            break
+        }
+        
+        return true
+        
+    }
 }
