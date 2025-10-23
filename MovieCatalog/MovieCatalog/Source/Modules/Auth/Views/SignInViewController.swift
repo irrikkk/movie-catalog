@@ -8,14 +8,12 @@
 import UIKit
 
 class SignInViewController: UIViewController {
-    var onLoginSuccess: (() -> Void)?
-    
     // MARK: - UI Elements
     let imageViewLogo = UIImageView(image: UIImage(named: "logoApp"))
     let textFieldViewLogin = UITextField()
     let textFieldViewPassword = UITextField()
-    let buttonSignIn = UIButton(type: .system)
-    let buttonRegistration = UIButton(type: .system)
+    let buttonSignIn = UIButton(type: .custom)
+    let buttonRegistration = UIButton(type: .custom)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,44 +75,29 @@ class SignInViewController: UIViewController {
         // MARK: - Button1
         buttonSignIn.setTitle("Войти", for: .normal)
         buttonSignIn.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
-        buttonSignIn.backgroundColor = UIColor(named: "BlackMyColor")
+        buttonSignIn.backgroundColor = .black
         buttonSignIn.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
         buttonSignIn.layer.borderWidth = 1
         buttonSignIn.layer.cornerRadius = 4
         buttonSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        
         buttonSignIn.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonSignIn)
-        
-        buttonSignIn.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
         
         
         // MARK: - Button2
         buttonRegistration.setTitle("Регистрация", for: .normal)
-        buttonRegistration.backgroundColor = UIColor(named: "BlackMyColor")
+        buttonRegistration.backgroundColor = .black
         buttonRegistration.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
         buttonRegistration.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
         
         buttonRegistration.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonRegistration)
         
-        buttonRegistration.addTarget(self, action: #selector(registrationButtonTapped), for: .touchUpInside)
-        
-        
         setupConstraints()
-        setupDelegates()
-        updateLoginButtonState()
+        
     }
     
-    private func setupDelegates() {
-        textFieldViewLogin.delegate = self
-        textFieldViewPassword.delegate = self
-        
-        // отслежка изменений текста
-        textFieldViewLogin.addTarget(self, action: #selector(textFieldDidChange ), for: .editingChanged)
-        textFieldViewPassword.addTarget(self, action: #selector(textFieldDidChange ), for: .editingChanged)
-        
-        
-    }
     
     // MARK: - Layout Constraints
     private func setupConstraints() {
@@ -160,65 +143,6 @@ class SignInViewController: UIViewController {
        
     }
     
-    // MARK: - Action Methods
-    @objc func  textFieldDidChange() {
-        updateLoginButtonState()
-    }
     
-    @objc func signInButtonTapped() {
-        view.endEditing(true)
-        
-        UserDefaults.standard.set(true, forKey: "isUserSignedIn")
-        navigateToMainScreen()
-        
-    }
-    
-    @objc func registrationButtonTapped() {
-        UserDefaults.standard.set(false, forKey: "isUserSignedIn")
-        navigateToMainScreen()
-    }
-    
-    func navigateToMainScreen() {
-        onLoginSuccess?()
-    }
-    
-    func updateLoginButtonState() {
-        let login = textFieldViewLogin.text ?? ""
-        let password = textFieldViewPassword.text ?? ""
-        
-        let isEnabled = !login.isEmpty && !password.isEmpty
-        
-        buttonSignIn.isEnabled = isEnabled
-        
-        if isEnabled {
-            buttonSignIn.backgroundColor = UIColor(named: "AccentColor")
-            buttonSignIn.setTitleColor(.white, for: .normal)
-            
-        } else {
-            buttonSignIn.backgroundColor = .blackMy
-            buttonSignIn.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
-            buttonSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
-        }
-    }
 }
 
-// MARK: - UITextFieldDelegate
-extension SignInViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        switch textField {
-        case textFieldViewLogin:
-            textFieldViewPassword.becomeFirstResponder()
-        case textFieldViewPassword:
-            textFieldViewPassword.resignFirstResponder()
-            
-            if buttonSignIn.isEnabled {
-                signInButtonTapped()
-            }
-        default :
-            break
-        }
-        
-        return true
-        
-    }
-}
