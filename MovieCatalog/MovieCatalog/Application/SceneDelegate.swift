@@ -18,30 +18,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        let window = UIWindow (windowScene: windowScene)
-        
-        let isSignedIn = UserDefaults.standard.bool(forKey: "isUserSignedIn")
-        let rootViewController: UIViewController
-        
-        if isSignedIn {
-            rootViewController = MainTabBarViewController()
-        } else {
-            let signInViewController = SignInViewController()
-            
-            signInViewController.onLoginSuccess = { [weak self] in
-                self?.switchToMainScreen()
-            }
-            rootViewController = signInViewController
-        }
-        window.rootViewController = rootViewController
-        self.window = window
-        window.makeKeyAndVisible()
+        // Все в трех строках:
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = MainTabBarViewController()
+        window?.makeKeyAndVisible()
     }
-    
-    func switchToMainScreen() {
-        let tabBarController = MainTabBarViewController()
-        window?.rootViewController = tabBarController
-    }
+
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
