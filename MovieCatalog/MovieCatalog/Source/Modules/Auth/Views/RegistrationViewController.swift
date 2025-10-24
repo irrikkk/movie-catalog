@@ -169,7 +169,7 @@ class RegistrationViewController: UIViewController {
         
         datePicker.backgroundColor = .clear
         
-       
+           
         datePicker.tintColor = UIColor(named: "AccentColor")
         datePicker.setValue(UIColor(named: "AccentColor"), forKey: "textColor")
         
@@ -262,6 +262,8 @@ class RegistrationViewController: UIViewController {
         haveAccountButton.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
         haveAccountButton.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
         
+        haveAccountButton.addTarget(self, action: #selector(haveAccountButtonTapped), for: .touchUpInside)
+        
         haveAccountButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(haveAccountButton)
         
@@ -300,6 +302,10 @@ class RegistrationViewController: UIViewController {
     
     @objc func genderChanged(_ sender: UISegmentedControl) {
         selectedGender = sender.selectedSegmentIndex
+    }
+    
+    @objc func haveAccountButtonTapped() {
+        dismiss(animated: true, completion: nil)
     }
     
 }

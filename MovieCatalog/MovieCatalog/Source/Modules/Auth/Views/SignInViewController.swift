@@ -81,6 +81,8 @@ class SignInViewController: UIViewController {
         buttonSignIn.layer.cornerRadius = 4
         buttonSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
         
+        buttonSignIn.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
+        
         buttonSignIn.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonSignIn)
         
@@ -91,6 +93,8 @@ class SignInViewController: UIViewController {
         buttonRegistration.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
         buttonRegistration.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
         
+        buttonRegistration.addTarget(self, action: #selector(registrationButtonTapped), for: .touchUpInside)
+        
         buttonRegistration.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonRegistration)
         
@@ -99,48 +103,72 @@ class SignInViewController: UIViewController {
     }
     
     
-    // MARK: - Layout Constraints
+    // MARK: - Constraints
     private func setupConstraints() {
-       
-        imageViewLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        imageViewLogo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
+       NSLayoutConstraint.activate([
+            imageViewLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageViewLogo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
+                
+            imageViewLogo.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 250/375),
+            imageViewLogo.heightAnchor.constraint(equalTo: imageViewLogo.widthAnchor, multiplier: 169.59/250),
+      
             
-        imageViewLogo.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 250/375).isActive = true
-        imageViewLogo.heightAnchor.constraint(equalTo: imageViewLogo.widthAnchor, multiplier: 169.59/250).isActive = true
-  
+        
+            textFieldViewLogin.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 19),
+            textFieldViewLogin.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -13),
+            textFieldViewLogin.topAnchor.constraint(equalTo: imageViewLogo.bottomAnchor, constant: 96),
+                
+            textFieldViewLogin.heightAnchor.constraint(equalToConstant: 44),
+            
+            
+        
+            textFieldViewPassword.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 19),
+            textFieldViewPassword.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -13),
+            textFieldViewPassword.topAnchor.constraint(equalTo: textFieldViewLogin.bottomAnchor, constant: 16),
+                
+            textFieldViewPassword.heightAnchor.constraint(equalToConstant: 44),
+          
+            
+            
+            buttonSignIn.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16),
+            buttonSignIn.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
+            buttonSignIn.bottomAnchor.constraint(equalTo: buttonRegistration.topAnchor, constant: -8),
+            
+                
+            buttonSignIn.heightAnchor.constraint(equalToConstant: 44),
+            
+            
+          
+            buttonRegistration.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16),
+            buttonRegistration.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
+            buttonRegistration.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6),
+                
+            buttonRegistration.heightAnchor.constraint(equalToConstant: 32),
+        ])
+           
+    }
+    
+    // MARK: - Button Actions
+    @objc func signInButtonTapped() {
+        // TODO:
+        // Добавить логику входа
+        // Проверка логина и пароля
+        // Переход на главный экран
+        
+        let login = textFieldViewLogin.text ?? ""
+        let password = textFieldViewPassword.text ?? ""
         
     
-        textFieldViewLogin.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 19).isActive = true
-        textFieldViewLogin.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -13).isActive = true
-        textFieldViewLogin.topAnchor.constraint(equalTo: imageViewLogo.bottomAnchor, constant: 96).isActive = true
-            
-        textFieldViewLogin.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
-        
+        print("Логин: \(login), Пароль: \(password)")
+      
+    }
     
-        textFieldViewPassword.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 19).isActive = true
-        textFieldViewPassword.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -13).isActive = true
-        textFieldViewPassword.topAnchor.constraint(equalTo: textFieldViewLogin.bottomAnchor, constant: 16).isActive = true
-            
-        textFieldViewPassword.heightAnchor.constraint(equalToConstant: 44).isActive = true
-      
+    @objc func registrationButtonTapped() {
+        let registrationViewController = RegistrationViewController()
         
-        
-        buttonSignIn.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16).isActive = true
-        buttonSignIn.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16).isActive = true
-        buttonSignIn.bottomAnchor.constraint(equalTo: buttonRegistration.topAnchor, constant: -8).isActive = true
-        
-            
-        buttonSignIn.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        
-        
-      
-        buttonRegistration.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16).isActive = true
-        buttonRegistration.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16).isActive = true
-        buttonRegistration.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6).isActive = true
-            
-        buttonRegistration.heightAnchor.constraint(equalToConstant: 32).isActive = true
-       
+        registrationViewController.modalPresentationStyle = .fullScreen
+        present(registrationViewController, animated: true, completion: nil)
     }
     
     
