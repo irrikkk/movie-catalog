@@ -200,8 +200,8 @@ class RegistrationViewController: UIViewController {
     
     // MARK: - GenderControle
     func setupGenderSegmentedControl() {
-        genderSegmentedControl.insertSegment(withTitle: "Мужской", at: 0, animated: false)
-        genderSegmentedControl.insertSegment(withTitle: "Женский", at: 1, animated: false)
+        genderSegmentedControl.insertSegment(withTitle: "Мужчина", at: 0, animated: false)
+        genderSegmentedControl.insertSegment(withTitle: "Женщина", at: 1, animated: false)
         
         genderSegmentedControl.selectedSegmentTintColor = UIColor(named: "AccentColor")
         genderSegmentedControl.backgroundColor = .black
@@ -226,7 +226,7 @@ class RegistrationViewController: UIViewController {
         genderSegmentedControl.addTarget(self, action: #selector(genderChanged(_:)), for: .valueChanged)
         
         genderSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        genderSegmentedControl.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        genderSegmentedControl.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         textFieldStackView.addArrangedSubview(genderSegmentedControl)
     }
