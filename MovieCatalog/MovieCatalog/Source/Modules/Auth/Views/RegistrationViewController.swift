@@ -17,6 +17,25 @@ class RegistrationViewController: UIViewController {
     private var registerButton: UIButton!
     private var haveAccountButton: UIButton!
     
+    private let viewModel = RegistrationViewModel()
+    
+    // MARK: - Error Labels
+    private let usernameErrorLabel = createErrorLabel()
+    private let emailErrorLabel = createErrorLabel()
+    private let nameErrorLabel = createErrorLabel()
+    private let passwordErrorLabel = createErrorLabel()
+    private let confirmPasswordErrorLabel = createErrorLabel()
+    
+    private static func createErrorLabel() -> UILabel {
+        let label = UILabel()
+        label.textColor = .red
+        label.font = UIFont(name: "IBMPlexSans-Medium", size: 12)
+        label.isHidden = true
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }
+    
     private let textFieldStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -24,6 +43,9 @@ class RegistrationViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
+    
+    var logoStartFrame: CGRect?
+    var logoSnapshot: UIView?
     
     // MARK: - Input Fields
     private let textFieldLogin = UITextField()
@@ -49,6 +71,9 @@ class RegistrationViewController: UIViewController {
         setupHaveAccountButton()
         setupRegisterButton()
         setupConstraints()
+        addErrorLabels()
+        setupConnectionWithViewModel()
+        setupTextFieldActions()
     }
 
     
@@ -132,8 +157,6 @@ class RegistrationViewController: UIViewController {
             textField.rightView = rightView
             textField.rightViewMode = .always
             
-            //textField.delegate = self
-            
         }
         
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -142,8 +165,9 @@ class RegistrationViewController: UIViewController {
         textField.heightAnchor.constraint(equalToConstant: 44).isActive = true
     }
     
+    // MARK: - DatePicker
+
     func setupDatePicker() {
-        // MARK: - DatePicker
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showCenteredDatePicker))
         textFieldDateOfBirth.addGestureRecognizer(tapGesture)
     }
@@ -200,8 +224,8 @@ class RegistrationViewController: UIViewController {
     
     // MARK: - GenderControle
     func setupGenderSegmentedControl() {
-        genderSegmentedControl.insertSegment(withTitle: "Мужской", at: 0, animated: false)
-        genderSegmentedControl.insertSegment(withTitle: "Женский", at: 1, animated: false)
+        genderSegmentedControl.insertSegment(withTitle: "Мужчина", at: 0, animated: false)
+        genderSegmentedControl.insertSegment(withTitle: "Женщина", at: 1, animated: false)
         
         genderSegmentedControl.selectedSegmentTintColor = UIColor(named: "AccentColor")
         genderSegmentedControl.backgroundColor = .black
@@ -226,7 +250,7 @@ class RegistrationViewController: UIViewController {
         genderSegmentedControl.addTarget(self, action: #selector(genderChanged(_:)), for: .valueChanged)
         
         genderSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        genderSegmentedControl.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        genderSegmentedControl.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         textFieldStackView.addArrangedSubview(genderSegmentedControl)
     }
@@ -241,6 +265,8 @@ class RegistrationViewController: UIViewController {
         registerButton.layer.borderWidth = 1
         registerButton.layer.cornerRadius = 4
         registerButton.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        
+        registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         
         registerButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(registerButton)
@@ -277,6 +303,34 @@ class RegistrationViewController: UIViewController {
             
     }
     
+    // MARK: Error labels View
+    private func addErrorLabels() {
+        view.addSubview(usernameErrorLabel)
+        view.addSubview(emailErrorLabel)
+        view.addSubview(nameErrorLabel)
+        view.addSubview(passwordErrorLabel)
+        view.addSubview(confirmPasswordErrorLabel)
+    }
+    
+    // MARK: - Animation Logo
+    func animateLogoFrom(logoSnapshot: UIView) {
+        guard let startFrame = logoStartFrame else { return }
+        
+        let finalFrame = imageViewLogo.convert(imageViewLogo.bounds, to: view)
+        
+        logoSnapshot.frame = startFrame
+        view.addSubview(logoSnapshot)
+        
+        imageViewLogo.isHidden = true
+        
+        UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+            logoSnapshot.frame = finalFrame
+        }) { _ in
+            self.imageViewLogo.isHidden = false
+            logoSnapshot.removeFromSuperview()
+        }
+    }
+
     
     // MARK: - Constraints
     func setupConstraints() {
@@ -285,27 +339,113 @@ class RegistrationViewController: UIViewController {
             textFieldStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             textFieldStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
+            usernameErrorLabel.topAnchor.constraint(equalTo: textFieldLogin.bottomAnchor, constant: 4),
+            usernameErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
+            usernameErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
+                    
+            emailErrorLabel.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 4),
+            emailErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
+            emailErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
+                    
+            nameErrorLabel.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 4),
+            nameErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
+            nameErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
+                    
+            passwordErrorLabel.topAnchor.constraint(equalTo: textFieldPassword.bottomAnchor, constant: 4),
+            passwordErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
+            passwordErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
+                    
+            confirmPasswordErrorLabel.topAnchor.constraint(equalTo: textFieldConfirmPassword.bottomAnchor, constant: 4),
+            confirmPasswordErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
+            confirmPasswordErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
+            
         ])
     }
     
-    // MARK: - Date Picker Actions
+    // MARK: - TextField Actions
+    private func setupTextFieldActions() {
+        textFieldLogin.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        textFieldEmail.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        textFieldName.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        textFieldPassword.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        textFieldConfirmPassword.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+    }
+    
+    // MARK: - UI Update
+    private func updateValidationMessage() {
+        usernameErrorLabel.text = viewModel.loginValidationMessage
+        emailErrorLabel.text = viewModel.emailValidationMessage
+        nameErrorLabel.text = viewModel.nameValidationMessage
+        passwordErrorLabel.text = viewModel.passwordValidationMessage
+        confirmPasswordErrorLabel.text = viewModel.confirmPasswordValidationMessage
+                
+        usernameErrorLabel.isHidden = viewModel.loginValidationMessage.isEmpty
+        emailErrorLabel.isHidden = viewModel.emailValidationMessage.isEmpty
+        nameErrorLabel.isHidden = viewModel.nameValidationMessage.isEmpty
+        passwordErrorLabel.isHidden = viewModel.passwordValidationMessage.isEmpty
+        confirmPasswordErrorLabel.isHidden = viewModel.confirmPasswordValidationMessage.isEmpty
+    }
+    
+    private func updateRegisterButton(isEnabled: Bool) {
+        registerButton.isEnabled = isEnabled
+        
+        if isEnabled {
+            registerButton.backgroundColor = UIColor(named: "AccentColor")
+            registerButton.setTitleColor(.white, for: .normal)
+            registerButton.layer.borderColor = UIColor(named: "AccentColor")?.cgColor
+        } else {
+            registerButton.backgroundColor = .black
+            registerButton.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
+            registerButton.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        }
+    }
+    
+    private func handleRegistrationSuccess() {
+        
+    }
+    
+    // MARK: - Actions
+    @objc private func textFieldChanged() {
+        viewModel.login = textFieldLogin.text ?? ""
+        viewModel.email = textFieldEmail.text ?? ""
+        viewModel.name = textFieldName.text ?? ""
+        viewModel.password = textFieldPassword.text ?? ""
+        viewModel.confirmPassword = textFieldConfirmPassword.text ?? ""
+    }
+    
+    @objc private func registerButtonTapped() {
+        view.endEditing(true)
+        viewModel.performRegistration()
+    }
+    
+    @objc func haveAccountButtonTapped() {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc func dateSelectedAutomatically(_ sender: UIDatePicker) {
         selectedDate = sender.date
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy"
-        formatter.locale = Locale(identifier: "ru_RU")
-        textFieldDateOfBirth.text = formatter.string(from: selectedDate)
+        viewModel.birthDate = sender.date
         
         dismiss(animated: true, completion: nil)
     }
     
     @objc func genderChanged(_ sender: UISegmentedControl) {
         selectedGender = sender.selectedSegmentIndex
+        viewModel.gender = sender.selectedSegmentIndex
     }
     
-    @objc func haveAccountButtonTapped() {
-        dismiss(animated: true, completion: nil)
+    // MARK: - ViewModel
+    private func setupConnectionWithViewModel() {
+        viewModel.onFormValidation = { [weak self] isValid in
+            self?.updateRegisterButton(isEnabled: isValid)
+        }
+        viewModel.onValidationMessageUpdate = { [weak self]  in
+            self?.updateValidationMessage()
+        }
+        viewModel.onRegistrationSuccess = { [weak self] in
+            self?.handleRegistrationSuccess()
+        }
+        
     }
     
 }
