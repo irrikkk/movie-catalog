@@ -7,8 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		460383102EB388F3002163FD /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4603830F2EB388F3002163FD /* KeychainSwift */; };
+		460383132EB38930002163FD /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 460383122EB38930002163FD /* Alamofire */; };
 		46170A0A2EA0CBF100CCE26E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 46170A092EA0CBE600CCE26E /* .gitignore */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4603830D2EB360D1002163FD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		46170A092EA0CBE600CCE26E /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -41,6 +56,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				460383102EB388F3002163FD /* KeychainSwift in Frameworks */,
+				460383132EB38930002163FD /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +83,7 @@
 				468E1AB42E980701002550CD /* Sources */,
 				468E1AB52E980701002550CD /* Frameworks */,
 				468E1AB62E980701002550CD /* Resources */,
+				4603830D2EB360D1002163FD /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -76,6 +94,8 @@
 			);
 			name = MovieCatalog;
 			packageProductDependencies = (
+				4603830F2EB388F3002163FD /* KeychainSwift */,
+				460383122EB38930002163FD /* Alamofire */,
 			);
 			productName = MovieCatalog;
 			productReference = 46170A1B2EA0E3BF00CCE26E /* MovieCatalog.app */;
@@ -105,6 +125,10 @@
 			);
 			mainGroup = 468E1AAF2E980701002550CD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4603830E2EB388F3002163FD /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				460383112EB38930002163FD /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 468E1AAF2E980701002550CD;
 			projectDirPath = "";
@@ -151,6 +175,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -178,6 +203,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -334,6 +360,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4603830E2EB388F3002163FD /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
+		460383112EB38930002163FD /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4603830F2EB388F3002163FD /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4603830E2EB388F3002163FD /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		460383122EB38930002163FD /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 460383112EB38930002163FD /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 468E1AB02E980701002550CD /* Project object */;
 }
