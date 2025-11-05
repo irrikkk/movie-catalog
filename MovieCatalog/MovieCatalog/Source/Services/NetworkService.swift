@@ -43,7 +43,7 @@ class NetworkService {
             case .success(let registerResponse):
                 completion(.success(registerResponse))
             case .failure(let error):
-                completion(.failure(self.handleError(error)))
+                completion(.failure(error))
             }
         }
     }
@@ -65,26 +65,26 @@ class NetworkService {
             case .success(let loginResponse):
                 completion(.success(loginResponse))
             case .failure(let error):
-                completion(.failure(self.handleError(error)))
+                completion(.failure(error))
             }
         }
     }
     
-    // MARK: - Error Handling
-    private func handleError(_ error: AFError) -> Error {
-        if let statusCode = error.responseCode {
-            switch statusCode {
-            case 400:
-                return NSError(domain: "AuthError", code: 400, userInfo: [NSLocalizedDescriptionKey : "Неверный логин или пароль"])
-            case 500:
-                return NSError(domain: "ServerError", code: 500, userInfo: [NSLocalizedDescriptionKey : "Произошла ошибка на сервере"])
-            default :
-                return error
+    // MARK: - User
+    func getProfile(completion: @escaping (Result<ProfileResponse, Error>) -> Void) {
+        AF.request (
+            "\(baseURL)/account/profile",
+            method: .get,
+            headers: headers
+        )
+        .validate()
+        .responseDecodable(of: ProfileResponse.self) { response in
+            switch response.result {
+            case .success(let profileResponse):
+                completion(.success(profileResponse))
+            case .failure(let error):
+                completion(.failure(error))
             }
-            
         }
-        return error
     }
-        
-    
 }

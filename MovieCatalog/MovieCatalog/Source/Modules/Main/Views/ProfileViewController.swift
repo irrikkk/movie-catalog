@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class ProfileViewController : UIViewController {
     // MARK: - UI Elements
     private var profileHeaderStackView: UIStackView!
@@ -24,6 +25,13 @@ class ProfileViewController : UIViewController {
     
     private var logautButton: UIButton!
     
+    private let viewModel = ProfileViewModel()
+    
+    // Value Labels
+    private var emailValueLabel: UILabel!
+    private var nameValueLabel: UILabel!
+    private var dateOfBirthValueLabel: UILabel!
+    
     // MARK: - Info Items
     private let emailContainer = UIView()
     private let nameContainer = UIView()
@@ -38,6 +46,12 @@ class ProfileViewController : UIViewController {
         setupInfoStack()
         setupLogoutButton()
         setupConstraints()
+        setupConnectionWithViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadProfileData()
     }
     
     // MARK: - Profile Header
@@ -69,15 +83,15 @@ class ProfileViewController : UIViewController {
     
     // MARK: - Info Stack
     func setupInfoStack() {
-        setupInfoItem(title: "E-mail", value: "test@example.com")
-        setupInfoItem(title: "Имя", value: "Тест Тестович")
-        setupInfoItem(title: "Дата рождения", value: "01.01.2022")
+        setupInfoItem(title: "E-mail", value: "Загрузка...", container: emailContainer)
+        setupInfoItem(title: "Имя", value: "Загрузка...", container: nameContainer)
+        setupInfoItem(title: "Дата рождения", value: "Загрузка...", container: dateOfBirthContainer)
         setupGenderItem()
         
         view.addSubview(infoStackView)
     }
     
-    func setupInfoItem(title: String, value: String) {
+    func setupInfoItem(title: String, value: String, container: UIView) {
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
@@ -96,6 +110,13 @@ class ProfileViewController : UIViewController {
         valueLabel.font = UIFont(name: "IBMPlexSans-Regular", size: 14)
         valueLabel.textColor = UIColor(named: "AccentColor")
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        switch title {
+        case "E-mail": emailValueLabel = valueLabel
+        case "Имя": nameValueLabel = valueLabel
+        case "Дата рождения": dateOfBirthValueLabel = valueLabel
+        default : break
+        }
         
         valueField.addSubview(valueLabel)
         
@@ -174,7 +195,7 @@ class ProfileViewController : UIViewController {
         logautButton.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
         logautButton.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
         
-        //logautButton.addTarget(self, action: #selector(logautButtonTapped), for: .touchUpInside)
+        logautButton.addTarget(self, action: #selector(logautButtonTapped), for: .touchUpInside)
         
         logautButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logautButton)
@@ -201,6 +222,67 @@ class ProfileViewController : UIViewController {
             logautButton.heightAnchor.constraint(equalToConstant: 32),
             
         ])
+    }
+    // MARK: - Actions
+    private func loadProfileData() {
+        viewModel.loadProfile()
+    }
+    
+    @objc private func logautButtonTapped() {
+        viewModel.performLogout()
+    }
+    
+    private func navigateToLogin() {
+        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            let loginVC = SignInViewController()
+            sceneDelegate.window?.rootViewController = loginVC
+        }
+    }
+
+    
+    // MARK: - UI Update
+    private func updateUIWithProfile() {
+        guard let profile = viewModel.profile else { return }
+        
+        let displayName = profile.name.isEmpty ? profile.nickName : profile.name
+        nameLabel.text = displayName
+        
+        emailValueLabel.text = profile.email
+        nameValueLabel.text = profile.name.isEmpty ? "Не указано" : profile.name
+        dateOfBirthValueLabel.text = formatBirthDate(profile.birthDate)
+        segmentedControl.selectedSegmentIndex = profile.gender == 0 ? 0 : 1
+}
+    
+    // MARK: - Date Formatting
+    private func formatBirthDate(_ dateString: String) -> String {
+        let customFormatter = DateFormatter()
+        customFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        customFormatter.locale = Locale(identifier: "en_US_POSIX")
+        customFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+           
+        if let date = customFormatter.date(from: dateString) {
+            let result = formatDateToDisplay(date)
+            return result
+           }
+        return dateString
+    }
+    
+    private func formatDateToDisplay(_ date: Date) -> String {
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd.MM.yyyy"
+        outputFormatter.locale = Locale(identifier: "ru_RU")
+        return outputFormatter.string(from: date)
+    }
+    
+    // MARK: - ViewModel
+    private func setupConnectionWithViewModel() {
+        viewModel.onProfileLoaded = { [weak self] in
+            self?.updateUIWithProfile()
+        }
+        
+        viewModel.onLogoutSuccess = { [weak self] in
+            self?.navigateToLogin()
+        }
     }
 }
 
