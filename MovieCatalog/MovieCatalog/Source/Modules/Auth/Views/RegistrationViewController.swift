@@ -17,6 +17,20 @@ class RegistrationViewController: UIViewController {
     private var registerButton: UIButton!
     private var haveAccountButton: UIButton!
     
+    // MARK: - ScrollView
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
+    }()
+    
+    private let contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private let viewModel = RegistrationViewModel()
     
     // MARK: - Error Labels
@@ -29,7 +43,7 @@ class RegistrationViewController: UIViewController {
     private static func createErrorLabel() -> UILabel {
         let label = UILabel()
         label.textColor = .red
-        label.font = UIFont(name: "IBMPlexSans-Medium", size: 12)
+        label.font = UIFont(name: "IBMPlexSans-Medium", size: 10)
         label.isHidden = true
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -66,14 +80,20 @@ class RegistrationViewController: UIViewController {
         
         setupImageViewLogo()
         setupRegistrationLabel()
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
         setupUIStack()
         setupDatePicker()
         setupHaveAccountButton()
         setupRegisterButton()
         setupConstraints()
-        addErrorLabels()
+        setupErrorLabels()
+        setupErrorLabelsConstraints()
         setupConnectionWithViewModel()
         setupTextFieldActions()
+        setupCloseKeyboard()
     }
 
     
@@ -120,7 +140,7 @@ class RegistrationViewController: UIViewController {
         setupTextField(textFieldDateOfBirth, placeholder: "Дата рождения")
         setupGenderSegmentedControl()
         
-        view.addSubview(textFieldStackView)
+        contentView.addSubview(textFieldStackView)
     }
     
     func setupTextField(_ textField: UITextField, placeholder: String) {
@@ -141,9 +161,22 @@ class RegistrationViewController: UIViewController {
         textField.layer.cornerRadius = 8
         textField.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
         
+        if textField == textFieldPassword || textField == textFieldConfirmPassword {
+            textField.isSecureTextEntry = true
+            textField.textContentType = .newPassword
+        }
+        
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 44))
         textField.leftView = paddingView
         textField.leftViewMode = .always
+        
+        if textField == textFieldConfirmPassword {
+            textField.returnKeyType = .done
+        } else {
+            textField.returnKeyType = .next
+        }
+        
+        textField.delegate = self
         
         if textField == textFieldDateOfBirth {
             let calendarImageView = UIImageView(image: UIImage(systemName: "calendar"))
@@ -183,6 +216,7 @@ class RegistrationViewController: UIViewController {
         containerView.layer.cornerRadius = 12
         containerView.layer.masksToBounds = true
         containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.tag = 123
         
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
@@ -197,10 +231,8 @@ class RegistrationViewController: UIViewController {
         datePicker.tintColor = UIColor(named: "AccentColor")
         datePicker.setValue(UIColor(named: "AccentColor"), forKey: "textColor")
         
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         
-        datePicker.addTarget(self, action: #selector(dateSelectedAutomatically(_:)), for: .valueChanged)
-        
-
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(datePicker)
@@ -258,7 +290,7 @@ class RegistrationViewController: UIViewController {
     // MARK: - RegisterButton
     func setupRegisterButton() {
         registerButton = UIButton(type: .system)
-        registerButton.setTitle("Зарегестрироваться ", for: .normal)
+        registerButton.setTitle("Зарегистрироваться ", for: .normal)
         registerButton.titleLabel?.font = UIFont(name: "IBMPlexSans-Medium", size: 16)
         registerButton.backgroundColor = .black
         registerButton.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
@@ -303,15 +335,6 @@ class RegistrationViewController: UIViewController {
             
     }
     
-    // MARK: Error labels View
-    private func addErrorLabels() {
-        view.addSubview(usernameErrorLabel)
-        view.addSubview(emailErrorLabel)
-        view.addSubview(nameErrorLabel)
-        view.addSubview(passwordErrorLabel)
-        view.addSubview(confirmPasswordErrorLabel)
-    }
-    
     // MARK: - Animation Logo
     func animateLogoFrom(logoSnapshot: UIView) {
         guard let startFrame = logoStartFrame else { return }
@@ -335,31 +358,48 @@ class RegistrationViewController: UIViewController {
     // MARK: - Constraints
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            textFieldStackView.topAnchor.constraint(equalTo: registrationLabel.bottomAnchor, constant: 16),
-            textFieldStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            textFieldStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            scrollView.topAnchor.constraint(equalTo: registrationLabel.bottomAnchor, constant: 16),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: registerButton.topAnchor, constant: -44),
             
-            usernameErrorLabel.topAnchor.constraint(equalTo: textFieldLogin.bottomAnchor, constant: 4),
-            usernameErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
-            usernameErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
-                    
-            emailErrorLabel.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 4),
-            emailErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
-            emailErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
-                    
-            nameErrorLabel.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 4),
-            nameErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
-            nameErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
-                    
-            passwordErrorLabel.topAnchor.constraint(equalTo: textFieldPassword.bottomAnchor, constant: 4),
-            passwordErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
-            passwordErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
-                    
-            confirmPasswordErrorLabel.topAnchor.constraint(equalTo: textFieldConfirmPassword.bottomAnchor, constant: 4),
-            confirmPasswordErrorLabel.leadingAnchor.constraint(equalTo: textFieldStackView.leadingAnchor),
-            confirmPasswordErrorLabel.trailingAnchor.constraint(equalTo: textFieldStackView.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
+            textFieldStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            textFieldStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            textFieldStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            textFieldStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+    }
+    
+    // MARK: Error labels View
+    private func setupErrorLabels() {
+        let errorLabels = [usernameErrorLabel, emailErrorLabel, nameErrorLabel,
+                           passwordErrorLabel, confirmPasswordErrorLabel]
+            
+        errorLabels.forEach { view.addSubview($0) }
+    }
+    
+    private func setupErrorLabelsConstraints() {
+        let fieldErrorPairs: [(UITextField, UILabel)] = [
+            (textFieldLogin, usernameErrorLabel),
+            (textFieldEmail, emailErrorLabel),
+            (textFieldName, nameErrorLabel),
+            (textFieldPassword, passwordErrorLabel),
+            (textFieldConfirmPassword, confirmPasswordErrorLabel)
+        ]
+        
+        for (textField, errorLabel) in fieldErrorPairs {
+            NSLayoutConstraint.activate([
+                errorLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 1),
+                errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+                errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32)
+            ])
+        }
     }
     
     // MARK: - TextField Actions
@@ -401,7 +441,12 @@ class RegistrationViewController: UIViewController {
     }
     
     private func handleRegistrationSuccess() {
-        
+        dismiss(animated: true) {
+            if let SceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                let mainViewController = MainTabBarViewController()
+                SceneDelegate.window?.rootViewController = mainViewController
+            }
+        }
     }
     
     // MARK: - Actions
@@ -422,9 +467,14 @@ class RegistrationViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    @objc func dateSelectedAutomatically(_ sender: UIDatePicker) {
+    @objc func dateChanged(_ sender: UIDatePicker) {
         selectedDate = sender.date
         viewModel.birthDate = sender.date
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+        formatter.locale = Locale(identifier: "ru_RU")
+        textFieldDateOfBirth.text = formatter.string(from: selectedDate)
         
         dismiss(animated: true, completion: nil)
     }
@@ -432,6 +482,16 @@ class RegistrationViewController: UIViewController {
     @objc func genderChanged(_ sender: UISegmentedControl) {
         selectedGender = sender.selectedSegmentIndex
         viewModel.gender = sender.selectedSegmentIndex
+    }
+    
+    @objc func setupCloseKeyboard() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     // MARK: - ViewModel
@@ -448,4 +508,43 @@ class RegistrationViewController: UIViewController {
         
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        switch textField {
+        case textFieldLogin:
+            viewModel.wasLoginChanged = true
+        case textFieldEmail:
+            viewModel.wasEmailChanged = true
+        case textFieldName:
+            viewModel.wasNameChanged = true
+        case textFieldPassword:
+            viewModel.wasPasswordChanged = true
+        case textFieldConfirmPassword:
+            viewModel.wasConfirmPasswordChanged = true
+        default:
+            break
+        }
+    }
 }
+
+extension RegistrationViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case textFieldLogin:
+            textFieldEmail.becomeFirstResponder()
+        case textFieldEmail:
+            textFieldName.becomeFirstResponder()
+        case textFieldName:
+            textFieldPassword.becomeFirstResponder()
+        case textFieldPassword:
+            textFieldConfirmPassword.becomeFirstResponder()
+        case textFieldConfirmPassword:
+            textFieldConfirmPassword.resignFirstResponder()
+        default :
+            textField.resignFirstResponder()
+           
+        }
+        return true
+    }
+}
+    
+
