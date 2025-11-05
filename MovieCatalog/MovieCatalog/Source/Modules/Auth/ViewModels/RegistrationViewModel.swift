@@ -39,10 +39,23 @@ class RegistrationViewModel {
         }
     }
     
-    var birthDate: Date = Date()
+    var birthDate: Date? = nil {
+        didSet {
+            validateForm()
+        }
+    }
     
-    var gender: Int = 0
-
+    var gender: Int? = nil {
+        didSet {
+            validateForm()
+        }
+    }
+    
+    var wasLoginChanged: Bool = false
+    var wasEmailChanged: Bool = false
+    var wasNameChanged: Bool = false
+    var wasPasswordChanged: Bool = false
+    var wasConfirmPasswordChanged: Bool = false
     
     // MARK: - Validation State
     private(set) var isLoginValid: Bool = false
@@ -50,6 +63,9 @@ class RegistrationViewModel {
     private(set) var isNameValid: Bool = false
     private(set) var isPasswordlValid: Bool = false
     private(set) var isConfirmPasswordValid: Bool = false
+    private(set) var isBirthDateValid: Bool = false
+    private(set) var isGenderValid: Bool = false
+    
     private var isFormValid: Bool = false {
         didSet {
             onFormValidation?(isFormValid)
@@ -72,39 +88,64 @@ class RegistrationViewModel {
     // MARK: - Validation Logic
     private func validateForm() {
         isLoginValid = !login.isEmpty
-        loginValidationMessage = isLoginValid ? "" : "Введите логин"
+        loginValidationMessage = (wasLoginChanged && !isLoginValid) ? "Введите логин" : ""
         
         isEmailValid = !email.isEmpty && email.isValidEmail()
-        if email.isEmpty {
-            emailValidationMessage = "Введите email"
-        } else if !email.isValidEmail() {
-            emailValidationMessage = "Введите корректный email"
+        if wasEmailChanged {
+            if email.isEmpty {
+                emailValidationMessage = "Введите email"
+            } else if !email.isValidEmail() {
+                emailValidationMessage = "Введите корректный email"
+            } else {
+                emailValidationMessage = ""
+            }
         } else {
             emailValidationMessage = ""
         }
         
         isNameValid = !name.isEmpty
-        nameValidationMessage = isNameValid ? "" : "Введите имя"
+        nameValidationMessage = (wasNameChanged && !isNameValid) ? "Введите имя" : ""
         
-        isPasswordlValid = !password.isEmpty
-        passwordValidationMessage = isPasswordlValid ? "" : "Введите пароль"
+        isPasswordlValid = !password.isEmpty && password.count >= 6
+        if wasPasswordChanged {
+            if password.isEmpty {
+                passwordValidationMessage = "Введите пароль"
+            } else if password.count < 6 {
+                passwordValidationMessage = "Пароль должен быть не менее 6 символов"
+            } else {
+                passwordValidationMessage = ""
+            }
+        } else {
+            passwordValidationMessage = ""
+        }
         
         isConfirmPasswordValid = !confirmPassword.isEmpty && password == confirmPassword
-        if confirmPassword.isEmpty {
-            confirmPasswordValidationMessage = "Повторите пароль"
-        } else if password != confirmPassword {
-            confirmPasswordValidationMessage = "Пароли не совпадают"
+        if wasConfirmPasswordChanged {
+            if confirmPassword.isEmpty {
+                confirmPasswordValidationMessage = "Повторите пароль"
+            } else if password != confirmPassword {
+                confirmPasswordValidationMessage = "Пароли не совпадают"
+            } else {
+                confirmPasswordValidationMessage = ""
+            }
         } else {
             confirmPasswordValidationMessage = ""
         }
-            isFormValid = isLoginValid && isEmailValid && isNameValid && isPasswordlValid && isConfirmPasswordValid
-            
-            onValidationMessageUpdate?()
-            
+        
+        isBirthDateValid = birthDate != nil
+        isGenderValid = gender != nil
+        
+        isFormValid = isLoginValid && isEmailValid && isNameValid && isPasswordlValid && isConfirmPasswordValid && isBirthDateValid && isGenderValid
+        
+        onValidationMessageUpdate?()
     }
     
     // MARK: - Registration Logic
     func performRegistration() {
+        guard let birthDate = birthDate, let gender = gender else {
+            return
+        }
+        
         // отправляем запрос регистрации
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

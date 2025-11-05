@@ -47,6 +47,8 @@ class SignInViewController: UIViewController {
         let paddingView1 = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 44))
         textFieldViewLogin.leftView = paddingView1
         textFieldViewLogin.leftViewMode = .always
+        textFieldViewLogin.returnKeyType = .next
+        textFieldViewLogin.delegate = self
         
         textFieldViewLogin.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
@@ -62,6 +64,8 @@ class SignInViewController: UIViewController {
         textFieldViewPassword.layer.cornerRadius = 8
         textFieldViewPassword.font = UIFont(name: "IBMPlexSans-Regular", size: 14)
         textFieldViewPassword.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        textFieldViewPassword.isSecureTextEntry = true
+        textFieldViewPassword.textContentType = .password
         
         textFieldViewPassword.attributedPlaceholder = NSAttributedString(
             string: "Пароль",
@@ -73,6 +77,8 @@ class SignInViewController: UIViewController {
         let paddingView2 = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 44))
         textFieldViewPassword.leftView = paddingView2
         textFieldViewPassword.leftViewMode = .always
+        textFieldViewPassword.returnKeyType = .done
+        textFieldViewPassword.delegate = self
         
         textFieldViewPassword.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
@@ -109,6 +115,7 @@ class SignInViewController: UIViewController {
         
         setupConstraints()
         setupConnectionWithViewModel()
+        setupCloseKeyboard()
         
     }
     
@@ -160,7 +167,12 @@ class SignInViewController: UIViewController {
     
     // MARK: - Sign In
     private func handleLoginSuccess() {
-       
+        dismiss(animated: true) {
+            if let SceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                let mainViewController = MainTabBarViewController()
+                SceneDelegate.window?.rootViewController = mainViewController
+            }
+        }
     }
     
         
@@ -204,7 +216,29 @@ class SignInViewController: UIViewController {
         
         imageViewLogo.isHidden = false
     }
+    
+    @objc func setupCloseKeyboard() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
         
+}
+
+extension SignInViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == textFieldViewLogin {
+            textFieldViewPassword.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+        }
+        return true
+    }
+    
 }
 
 // MARK: - ViewModel

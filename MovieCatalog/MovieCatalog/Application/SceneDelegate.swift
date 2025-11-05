@@ -22,7 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         
         let rootViewController: UIViewController
-        if TokenManager.shared.authToken != nil {
+        
+        if hasValidToken() && !isFirstLaunch() {
             rootViewController = MainTabBarViewController()
         } else {
             rootViewController = SignInViewController()
@@ -30,7 +31,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
-
+        
+    }
+    
+    private func hasValidToken() -> Bool {
+        guard let token = TokenManager.shared.authToken, !token.isEmpty else {
+            return false
+        }
+        
+        return true
+    }
+    
+    private func isFirstLaunch() -> Bool {
+        let hasLaunchedBefore = UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+        
+        if !hasLaunchedBefore {
+            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+            TokenManager.shared.authToken = nil
+            return true
+        }
+        
+        return false
     }
 
 
