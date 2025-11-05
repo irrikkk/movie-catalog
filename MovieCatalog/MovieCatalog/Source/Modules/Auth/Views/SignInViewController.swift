@@ -15,6 +15,8 @@ class SignInViewController: UIViewController {
     let buttonSignIn = UIButton(type: .custom)
     let buttonRegistration = UIButton(type: .custom)
     
+    private let viewModel = SignInViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,15 +36,19 @@ class SignInViewController: UIViewController {
         textFieldViewLogin.font = UIFont(name: "IBMPlexSans-Regular", size: 14)
         textFieldViewLogin.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
         
-        let paragraphStyleLogin = NSMutableParagraphStyle()
-        paragraphStyleLogin.firstLineHeadIndent = 16
         
-        textFieldViewLogin.attributedPlaceholder = NSAttributedString(string: "Логин",
-                                                                      attributes: [
-                                                                        .foregroundColor: UIColor(named: "GrayFadedMyColor")!,
-                                                                        .paragraphStyle: paragraphStyleLogin,
-                                                                        .font: UIFont(name: "IBMPlexSans-Regular", size: 14)!
-                                                                      ])
+        textFieldViewLogin.attributedPlaceholder = NSAttributedString(
+            string: "Логин",
+            attributes: [
+                .foregroundColor: UIColor(named: "GrayFadedMyColor")!,
+                .font: UIFont(name: "IBMPlexSans-Regular", size: 14)!
+            ])
+        
+        let paddingView1 = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 44))
+        textFieldViewLogin.leftView = paddingView1
+        textFieldViewLogin.leftViewMode = .always
+        
+        textFieldViewLogin.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
         textFieldViewLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(textFieldViewLogin)
@@ -57,15 +63,18 @@ class SignInViewController: UIViewController {
         textFieldViewPassword.font = UIFont(name: "IBMPlexSans-Regular", size: 14)
         textFieldViewPassword.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
         
-        let paragraphStyleRegistration = NSMutableParagraphStyle()
-        paragraphStyleRegistration.firstLineHeadIndent = 16
+        textFieldViewPassword.attributedPlaceholder = NSAttributedString(
+            string: "Пароль",
+            attributes: [
+                .foregroundColor: UIColor(named: "GrayFadedMyColor")!,
+                .font: UIFont(name: "IBMPlexSans-Regular", size: 14)!
+            ])
         
-        textFieldViewPassword.attributedPlaceholder = NSAttributedString(string: "Пароль",
-        attributes: [
-            .foregroundColor: UIColor(named: "GrayFadedMyColor")!,
-            .paragraphStyle: paragraphStyleRegistration,
-            .font: UIFont(name: "IBMPlexSans-Regular", size: 14)!
-        ])
+        let paddingView2 = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 44))
+        textFieldViewPassword.leftView = paddingView2
+        textFieldViewPassword.leftViewMode = .always
+        
+        textFieldViewPassword.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
         textFieldViewPassword.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(textFieldViewPassword)
@@ -99,78 +108,120 @@ class SignInViewController: UIViewController {
         view.addSubview(buttonRegistration)
         
         setupConstraints()
+        setupConnectionWithViewModel()
         
     }
-    
     
     // MARK: - Constraints
     private func setupConstraints() {
        NSLayoutConstraint.activate([
             imageViewLogo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             imageViewLogo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
-                
             imageViewLogo.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 250/375),
             imageViewLogo.heightAnchor.constraint(equalTo: imageViewLogo.widthAnchor, multiplier: 169.59/250),
       
-            
-        
-            textFieldViewLogin.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 19),
-            textFieldViewLogin.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -13),
+            textFieldViewLogin.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16),
+            textFieldViewLogin.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
             textFieldViewLogin.topAnchor.constraint(equalTo: imageViewLogo.bottomAnchor, constant: 96),
-                
             textFieldViewLogin.heightAnchor.constraint(equalToConstant: 44),
-            
-            
         
-            textFieldViewPassword.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 19),
-            textFieldViewPassword.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -13),
+            textFieldViewPassword.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16),
+            textFieldViewPassword.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
             textFieldViewPassword.topAnchor.constraint(equalTo: textFieldViewLogin.bottomAnchor, constant: 16),
-                
             textFieldViewPassword.heightAnchor.constraint(equalToConstant: 44),
-          
-            
             
             buttonSignIn.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16),
             buttonSignIn.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
             buttonSignIn.bottomAnchor.constraint(equalTo: buttonRegistration.topAnchor, constant: -8),
-            
-                
             buttonSignIn.heightAnchor.constraint(equalToConstant: 44),
             
-            
-          
             buttonRegistration.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor ,constant: 16),
             buttonRegistration.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
             buttonRegistration.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -6),
-                
             buttonRegistration.heightAnchor.constraint(equalToConstant: 32),
+            
+            
         ])
-           
     }
     
-    // MARK: - Button Actions
+    // MARK: - UI Update
+    private func updateLoginButton(isEnabled: Bool) {
+        buttonSignIn.isEnabled = isEnabled
+        if isEnabled {
+            buttonSignIn.backgroundColor = UIColor(named: "AccentColor")
+            buttonSignIn.setTitleColor(.white, for: .normal)
+            buttonSignIn.layer.borderColor = UIColor(named: "AccentColor")?.cgColor
+        } else {
+            buttonSignIn.backgroundColor = .black
+            buttonSignIn.setTitleColor(UIColor(named: "AccentColor"), for: .normal)
+            buttonSignIn.layer.borderColor = UIColor(named: "GrayMyColor")?.cgColor
+        }
+    }
+    
+    // MARK: - Sign In
+    private func handleLoginSuccess() {
+       
+    }
+    
+        
+    // MARK: - Actions
+    @objc private func textFieldDidChange() {
+        viewModel.login = textFieldViewLogin.text ?? ""
+        viewModel.password = textFieldViewPassword.text ?? ""
+        
+        viewModel.onFormValidation?(viewModel.isFormValid)
+
+    }
+    
     @objc func signInButtonTapped() {
-        // TODO:
-        // Добавить логику входа
-        // Проверка логина и пароля
-        // Переход на главный экран
-        
-        let login = textFieldViewLogin.text ?? ""
-        let password = textFieldViewPassword.text ?? ""
-        
-    
-        
-        print("Логин: \(login), Пароль: \(password)")
-      
+        view.endEditing(true)
+        viewModel.performLogin()
     }
+        
     
     @objc func registrationButtonTapped() {
         let registrationViewController = RegistrationViewController()
-        
         registrationViewController.modalPresentationStyle = .fullScreen
-        present(registrationViewController, animated: true, completion: nil)
+        
+        // MARK: - Animation
+        registrationViewController.logoStartFrame = imageViewLogo.convert(imageViewLogo.bounds, to: nil)
+            
+        let logoSnapshot = imageViewLogo.snapshotView(afterScreenUpdates: false)!
+        logoSnapshot.frame = imageViewLogo.convert(imageViewLogo.bounds, to: view)
+        view.addSubview(logoSnapshot)
+            
+        imageViewLogo.isHidden = true
+            
+        
+        self.present(registrationViewController, animated: false) {
+            registrationViewController.animateLogoFrom(logoSnapshot: logoSnapshot)
+        }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        
+        imageViewLogo.isHidden = false
+    }
+        
+}
+
+// MARK: - ViewModel
+extension SignInViewController { 
+    private func setupConnectionWithViewModel() {
+        viewModel.onFormValidation = { [weak self] isValid in
+            print("форма валидна \(isValid)")
+            self?.updateLoginButton(isEnabled: isValid)
+        }
+        
+        viewModel.onLoginSuccess = { [weak self] in
+            print("успешный вход")
+            self?.handleLoginSuccess()
+        }
+        
+    }
     
 }
+
 
