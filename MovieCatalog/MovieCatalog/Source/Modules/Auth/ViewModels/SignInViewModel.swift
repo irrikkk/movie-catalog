@@ -11,8 +11,8 @@ class SignInViewModel {
     // MARK: - Input Properties
     var login: String = ""
     var password: String = ""
-    
-    
+
+
     var isFormValid: Bool {
         return !login.isEmpty && !password.isEmpty
     }
@@ -20,13 +20,13 @@ class SignInViewModel {
     // MARK: - Callbacks
     var onFormValidation: ((Bool) -> Void)?
     var onLoginSuccess: (() -> Void)?
-    var onLoginError: ((String) -> Void)? 
-    
+    var onLoginError: ((String) -> Void)?
+
     // MARK: - Login Logic
     func performLogin() {
         // отправляем запрос входа
         NetworkService.shared.login(username: login, password: password) { [weak self] result in
-            
+
             switch result {
             case .success(let loginResponse):
                 // сохраняем токен
@@ -39,3 +39,4 @@ class SignInViewModel {
         }
     }
 }
+

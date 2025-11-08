@@ -87,4 +87,26 @@ class NetworkService {
             }
         }
     }
+    
+    //MARK: - Movies
+    func getMovies(page: Int, completion: @escaping (Result<MoviesPagedListModel, Error>) -> Void) {
+        print("Making request to: \(baseURL)/movies/\(page)")
+        
+        AF.request(
+            "\(baseURL)/movies/\(page)",
+            method: .get,
+            headers: headers
+        )
+        .validate()
+        .responseDecodable(of: MoviesPagedListModel.self) { response in
+            switch response.result {
+            case .success(let moviesResponse):
+                print("Successfully received \(moviesResponse.movies.count) movies")
+                completion(.success(moviesResponse))
+            case .failure(let error):
+                print("Error loading movies: \(error)")
+                completion(.failure(error))
+            }
+        }
+    }
 }
